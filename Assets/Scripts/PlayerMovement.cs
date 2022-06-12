@@ -42,7 +42,7 @@ public class PlayerMovement : Player
             maxVelocity = maxWalkingVelocity;
 
         //LEFT AND RIGHT MOVEMENT:
-        movementInput.x = Input.GetAxis("Horizontal");
+        movementInput.x = Input.GetAxisRaw("Horizontal");
         if (movementInput.x > 0 && velocity.x < 1) //moving right
             velocity.x += inputAcceleration * Time.deltaTime; 
         if (movementInput.x < 0 && velocity.x > -1) //moving left
@@ -58,7 +58,7 @@ public class PlayerMovement : Player
         }
 
         //FORWARD AND BACK MOVEMENT:
-        movementInput.z = Input.GetAxis("Vertical");
+        movementInput.z = Input.GetAxisRaw("Vertical");
         if (movementInput.z > 0 && velocity.z < 1) //moving forward
             velocity.z += inputAcceleration * Time.deltaTime;
         if (movementInput.z < 0 && velocity.z > -1) //moving backward
