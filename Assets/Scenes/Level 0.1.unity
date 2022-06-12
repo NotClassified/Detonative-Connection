@@ -349,10 +349,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controller: {fileID: 1405127009}
   movementInput: {x: 0, y: 0, z: 0}
-  movement: {x: 0, y: 0, z: 0}
   velocity: {x: 0, y: 0, z: 0}
-  maxVelocity: 5
-  acceleration: 20
+  maxVelocity: 0
+  maxWalkingVelocity: 10
+  maxRunningVelocity: 20
+  inputAcceleration: 10
+  maxVelocityAcceleration: 80
 --- !u!143 &1405127009
 CharacterController:
   m_ObjectHideFlags: 0
