@@ -5,5 +5,6 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public CharacterController controller;
+    public Transform camMain;
 
 }

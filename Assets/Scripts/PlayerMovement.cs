@@ -5,12 +5,15 @@ using UnityEngine;
 public class PlayerMovement : Player
 {
     [SerializeField] Vector3 movementInput;
-    [SerializeField] Vector3 velocity;
-    [SerializeField] float maxVelocity;
-    [SerializeField] float maxWalkingVelocity;
-    [SerializeField] float maxRunningVelocity;
-    [SerializeField] float inputAcceleration;
-    [SerializeField] float maxVelocityAcceleration;
+    [SerializeField] Vector3 moveDirection;
+    [SerializeField] float velocity;
+    float maxVelocity;
+    [SerializeField] float acceleration;
+    [SerializeField] float deacceleration;
+    [SerializeField] float walkingVelocity;
+    [SerializeField] float runningVelocity;
+    [SerializeField] float rotationDuration;
+    [SerializeField] float rotationVelocity;
 
     // Start is called before the first frame update
     void Start()
@@ -21,79 +24,43 @@ public class PlayerMovement : Player
     // Update is called once per frame
     void Update()
     {
-        if (velocity != Vector3.zero)
-        {
-            if (Input.GetKey(KeyCode.LeftShift))
-            {
-                if (maxVelocity < maxRunningVelocity)
-                    maxVelocity += maxVelocityAcceleration * Time.deltaTime;
-                else if (maxVelocity > maxRunningVelocity)
-                    maxVelocity = maxRunningVelocity;
-            }
-            else
-            {
-                if (maxVelocity > maxWalkingVelocity)
-                    maxVelocity -= maxVelocityAcceleration * Time.deltaTime;
-                else if (maxVelocity < maxWalkingVelocity)
-                    maxVelocity = maxWalkingVelocity;
-            }
-        }
-        else
-            maxVelocity = maxWalkingVelocity;
-
-        //LEFT AND RIGHT MOVEMENT:
-        movementInput.x = Input.GetAxisRaw("Horizontal");
-        if (movementInput.x > 0 && velocity.x < 1) //moving right
-            velocity.x += inputAcceleration * Time.deltaTime; 
-        if (movementInput.x < 0 && velocity.x > -1) //moving left
-            velocity.x -= inputAcceleration * Time.deltaTime;
-        if (movementInput.x == 0) //not moving
-        {
-            if(velocity.x > 0) //stopping from moving right
-                velocity.x -= inputAcceleration * Time.deltaTime;
-            if (velocity.x < 0) //stopping from moving left
-                velocity.x += inputAcceleration * Time.deltaTime;
-            if(velocity.x < .1 && velocity.x > -.1) //stop completely (.1 velocity is the deadzone)
-                velocity.x = 0;
-        }
-
-        //FORWARD AND BACK MOVEMENT:
+        //INPUT:
         movementInput.z = Input.GetAxisRaw("Vertical");
-        if (movementInput.z > 0 && velocity.z < 1) //moving forward
-            velocity.z += inputAcceleration * Time.deltaTime;
-        if (movementInput.z < 0 && velocity.z > -1) //moving backward
-            velocity.z -= inputAcceleration * Time.deltaTime;
-        if (movementInput.z == 0) //not moving
+        movementInput.x = Input.GetAxisRaw("Horizontal");
+
+        if (movementInput.magnitude > 0) //when moving
         {
-            if (velocity.z > 0) //stopping from moving forward
-                velocity.z -= inputAcceleration * Time.deltaTime;
-            if (velocity.z < 0) //stopping from moving backward
-                velocity.z += inputAcceleration * Time.deltaTime;
-            if (velocity.z < .1 && velocity.z > -.1) //stop completely (.1 velocity is the deadzone)
-                velocity.z = 0;
+            if (Input.GetKey(KeyCode.LeftShift)) //when sprinting
+                maxVelocity = runningVelocity;
+            else
+                maxVelocity = walkingVelocity;
+            if (velocity < maxVelocity)
+                velocity += acceleration * Time.deltaTime;
+            else
+                velocity = maxVelocity;
+        }
+        else if (movementInput.magnitude == 0) //when not moving
+        {
+            if (velocity > 0) //slow down
+                velocity -= deacceleration * Time.deltaTime;
+            else
+                velocity = 0; //stop
         }
 
-        if (velocity.magnitude > 1) //normalize velocity when moving diagonally
-            velocity.Normalize();
-        controller.Move(velocity * Time.deltaTime * maxVelocity); //move player
+        if (velocity > 0) //when player is moving
+        {
+            if (movementInput.magnitude > 0)
+            {
+                //find angle that the player needs to rotate to
+                float targetAngle = Mathf.Atan2(movementInput.x, movementInput.z) * Mathf.Rad2Deg + camMain.eulerAngles.y;
+                //smooth the transition of the rotation
+                float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref rotationVelocity, rotationDuration);
+                transform.rotation = Quaternion.Euler(0f, angle, 0f); //apply rotation
+                moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+            }
+            controller.Move(moveDirection.normalized * Time.deltaTime * velocity); //move player
+
+        }
 
     }
 }
-/*
-if (velocityZ < 0) //prevent forward velocity from being negative
-    velocityZ = 0;
-//increase forward velocity when below walking speed and is grounded
-if (velocityZ < maxWalkVelocity && pt.isGrounded && !pt.isClimbing) 
-    velocityZ += (walkAcceleration / 10) * Time.deltaTime;
-//increse forward velocity when below running speed and is grounded
-else if (velocityZ < maxRunVelocity && pt.isGrounded && !pt.isClimbing) 
-    velocityZ += (runAcceleration / 10) * Time.deltaTime;
-//setting forward velocity when landing or climbing successfully
-if (velocityZ != 9 && pt.AnimCheck(0, "Land1") || pt.isClimbing) 
-{
-    velocityZ = 9;
-}
-else if (velocityZ != 6 && pt.AnimCheck(0, "Land2")) //setting velocity when landing unsuccessfully
-    velocityZ = 3;
-animator.SetFloat(hashVelocityZ, velocityZ); //correlating variables with animater
-*/
