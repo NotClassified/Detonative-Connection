@@ -6,12 +6,8 @@ public class PlayerInventory : MonoBehaviour
 {
     public int batteries;
 
-    private void OnTriggerEnter(Collider other)
+    public void CollectBattery()
     {
-        if (other.gameObject.CompareTag("Battery"))
-        {
-            Destroy(other.gameObject);
-            batteries++;
-        }
+        batteries++;
     }
 }

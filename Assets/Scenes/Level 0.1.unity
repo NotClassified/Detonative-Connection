@@ -735,8 +735,7 @@ GameObject:
   - component: {fileID: 1405127009}
   - component: {fileID: 1405127007}
   - component: {fileID: 1405127013}
-  - component: {fileID: 1405127014}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -863,19 +862,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   batteries: 0
---- !u!135 &1405127014
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1405127006}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 1.06
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1412120045
 GameObject:
   m_ObjectHideFlags: 3
@@ -945,7 +931,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1412120045}
-  m_LocalRotation: {x: 0.3060453, y: 0.000000023165901, z: -0.0000000074471513, w: 0.952017}
+  m_LocalRotation: {x: 0.3060453, y: -0.000000023165901, z: 0.0000000074471513, w: 0.952017}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1185,7 +1171,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1807972575}
-  m_LocalRotation: {x: 0.32326594, y: -0.000000016282433, z: 0.0000000055608695, w: 0.9463082}
+  m_LocalRotation: {x: 0.32326594, y: -0.000000016282936, z: 0.0000000055623413, w: 0.9463082}
   m_LocalPosition: {x: 0, y: 6, z: -6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
