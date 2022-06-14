@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Battery : MonoBehaviour
 {
-
+    [SerializeField] float radiusPickUp;
 
     void Start()
     {
@@ -13,16 +13,12 @@ public class Battery : MonoBehaviour
 
     private void Update()
     {
-        Collider[] colls = Physics.OverlapSphere(transform.position, 2, 7);
+        Collider[] colls = Physics.OverlapSphere(transform.position, radiusPickUp);
         foreach (Collider coll in colls)
         {
-            print(coll);
             if(coll.gameObject.CompareTag("Player"))
             {
-                print(coll);
-                print("yee");
                 coll.gameObject.GetComponent<PlayerInventory>().CollectBattery();
-                print(coll);
                 Destroy(gameObject);
                 return;
             }

@@ -10,4 +10,10 @@ public class PlayerInventory : MonoBehaviour
     {
         batteries++;
     }
+    public int ConnectBattery()
+    {
+        int numBatteries = batteries;
+        batteries = 0;
+        return numBatteries;
+    }
 }
