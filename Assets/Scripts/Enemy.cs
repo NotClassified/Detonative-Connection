@@ -7,10 +7,10 @@ public class Enemy : MonoBehaviour
     [SerializeField] Transform player;
 
     [SerializeField] Transform[] wayPoints;
-    int pointPos;
+    int wayPointIndex = 0;
     [SerializeField] float waitTimeAtPoint;
     [SerializeField] float moveSpeed;
-    [SerializeField] float trunSpeed;
+    [SerializeField] float turnSpeed;
 
     [SerializeField] float visionDistance;
     [SerializeField] float visionAngel;
@@ -20,7 +20,7 @@ public class Enemy : MonoBehaviour
             yield return null;
         player = GameManager.player.transform;
 
-        //StartCoroutine(Movement());
+        StartCoroutine(Movement());
     }
 
     private void Update()
@@ -31,10 +31,26 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    //IEnumerator Movement()
-    //{
+    IEnumerator Movement()
+    {
+        while (true)
+        {
+            Vector3 nextPoint = wayPoints[wayPointIndex].position;
+            if (wayPoints.Length < wayPointIndex)
+                nextPoint = wayPoints[0].position;
 
-    //}
+            float time = 0;
+            while (time < 1)
+            {
+                time += (Time.deltaTime * moveSpeed) / 100f;
+                transform.position = Vector3.Lerp(wayPoints[wayPointIndex].position, nextPoint, time);
+                yield return null;
+            }
+            transform.position = wayPoints[wayPointIndex + 1].position;
+            wayPointIndex++;
+            yield return new WaitForSeconds(waitTimeAtPoint);
+        }
+    }
 
     bool SpotPlayer()
     {
