@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class PlayerMovement : Player
 {
+    [SerializeField] CinemachineFreeLook cam;
+
     [SerializeField] Vector3 movementInput;
     [SerializeField] Vector3 moveDirection;
     [SerializeField] float velocity;
@@ -15,15 +18,13 @@ public class PlayerMovement : Player
     [SerializeField] float rotationDuration;
     [SerializeField] float rotationVelocity;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        Time.timeScale = .5f;
-    }
 
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.gameOver)
+            return;
+
         //INPUT:
         movementInput.z = Input.GetAxisRaw("Vertical");
         movementInput.x = Input.GetAxisRaw("Horizontal");
@@ -62,5 +63,15 @@ public class PlayerMovement : Player
 
         }
 
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            print(transform.eulerAngles.y);
+        }
+    }
+
+    public void LookAtEnemy(Transform enemy)
+    {
+        //transform.rotation = Quaternion.LookRotation(enemy.position - transform.position, Vector3.up);
+        cam.m_XAxis.Value = Quaternion.LookRotation(enemy.position - transform.position, Vector3.up).eulerAngles.y;
     }
 }
