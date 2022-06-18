@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Cinemachine;
 
 public class PlayerMovement : Player
 {
     [SerializeField] CinemachineFreeLook cam;
+    [SerializeField] Slider camXSensitivity;
+    [SerializeField] Slider camYSensitivity;
 
     [SerializeField] Vector3 movementInput;
     [SerializeField] Vector3 moveDirection;
@@ -23,7 +26,11 @@ public class PlayerMovement : Player
     void Update()
     {
         if (GameManager.gameOver)
+        {
+            animator.SetBool("IsRunning", false);
+            animator.SetBool("IsWalking", false);
             return;
+        }
 
         //INPUT:
         movementInput.z = Input.GetAxisRaw("Vertical");
@@ -31,10 +38,17 @@ public class PlayerMovement : Player
 
         if (movementInput.magnitude > 0) //when moving
         {
+            animator.SetBool("IsWalking", true);
             if (Input.GetKey(KeyCode.LeftShift)) //when sprinting
+            {
                 maxVelocity = runningVelocity;
+                animator.SetBool("IsRunning", true);
+            }
             else
+            {
                 maxVelocity = walkingVelocity;
+                animator.SetBool("IsRunning", false);
+            }
             if (velocity < maxVelocity)
                 velocity += acceleration * Time.deltaTime;
             else
@@ -42,6 +56,7 @@ public class PlayerMovement : Player
         }
         else if (movementInput.magnitude == 0) //when not moving
         {
+            animator.SetBool("IsWalking", false);
             if (velocity > 0) //slow down
                 velocity -= deacceleration * Time.deltaTime;
             else
@@ -73,5 +88,18 @@ public class PlayerMovement : Player
     {
         //transform.rotation = Quaternion.LookRotation(enemy.position - transform.position, Vector3.up);
         cam.m_XAxis.Value = Quaternion.LookRotation(enemy.position - transform.position, Vector3.up).eulerAngles.y;
+        cam.m_YAxis.Value = .5f;
+    }
+
+    public void ChangeCamSensitivity(string axis)
+    {
+        if (axis.Equals("X"))
+        {
+            cam.m_XAxis.m_MaxSpeed = camXSensitivity.value;
+        }
+        else if(axis.Equals("Y"))
+        {
+            cam.m_YAxis.m_MaxSpeed = camYSensitivity.value;
+        }
     }
 }

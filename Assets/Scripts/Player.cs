@@ -6,4 +6,5 @@ public class Player : MonoBehaviour
 {
     public CharacterController controller;
     public Transform camMain;
+    public Animator animator;
 }
