@@ -6,6 +6,12 @@ using Cinemachine;
 
 public class PlayerMovement : Player
 {
+    public Transform visionObject;
+    [SerializeField] Vector3 visionObjectDefaultPosition;
+    [SerializeField] Vector3 visionObjectCrouchPosition;
+    bool isCrouching;
+    [SerializeField] float crouchLayerLerpTime;
+
     [SerializeField] CinemachineFreeLook cam;
     [SerializeField] Slider camXSensitivity;
     [SerializeField] Slider camYSensitivity;
@@ -16,10 +22,12 @@ public class PlayerMovement : Player
     float maxVelocity;
     [SerializeField] float acceleration;
     [SerializeField] float deacceleration;
+    [SerializeField] float crouchingVelocity;
     [SerializeField] float walkingVelocity;
     [SerializeField] float runningVelocity;
     [SerializeField] float rotationDuration;
     [SerializeField] float rotationVelocity;
+
 
 
     // Update is called once per frame
@@ -41,6 +49,8 @@ public class PlayerMovement : Player
             animator.SetBool("IsWalking", true);
             if (Input.GetKey(KeyCode.LeftShift)) //when sprinting
             {
+                if (isCrouching)
+                    StartCoroutine(CrouchLayer(false));
                 maxVelocity = runningVelocity;
                 animator.SetBool("IsRunning", true);
             }
@@ -78,6 +88,14 @@ public class PlayerMovement : Player
 
         }
 
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            if (!isCrouching)
+                StartCoroutine(CrouchLayer(true));
+            else
+                StartCoroutine(CrouchLayer(false));
+        }
+
         if (Input.GetKeyDown(KeyCode.F))
         {
             print(transform.eulerAngles.y);
@@ -100,6 +118,40 @@ public class PlayerMovement : Player
         else if(axis.Equals("Y"))
         {
             cam.m_YAxis.m_MaxSpeed = camYSensitivity.value;
+        }
+    }
+
+    IEnumerator CrouchLayer(bool crouch)
+    {
+        isCrouching = crouch;
+
+        if (crouch)
+        {
+            float time = 0;
+            Vector3 initialPosition = visionObject.localPosition;
+            while (time < crouchLayerLerpTime)
+            {
+                time += Time.deltaTime;
+                animator.SetLayerWeight(1, time / crouchLayerLerpTime);
+                visionObject.localPosition = Vector3.Lerp(initialPosition, visionObjectCrouchPosition, time / crouchLayerLerpTime);
+                yield return null;
+            }
+            animator.SetLayerWeight(1, 1);
+            visionObject.localPosition = visionObjectCrouchPosition;
+        }
+        else
+        {
+            float time = crouchLayerLerpTime;
+            Vector3 initialPosition = visionObject.localPosition;
+            while (time > 0)
+            {
+                time -= Time.deltaTime;
+                animator.SetLayerWeight(1, time / crouchLayerLerpTime);
+                visionObject.localPosition = Vector3.Lerp(visionObjectDefaultPosition, initialPosition, time / crouchLayerLerpTime);
+                yield return null;
+            }
+            animator.SetLayerWeight(1, 0);
+            visionObject.localPosition = visionObjectDefaultPosition;
         }
     }
 }

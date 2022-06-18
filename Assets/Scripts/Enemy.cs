@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] Transform player;
+    [SerializeField] Transform playerPosition;
+    [SerializeField] Animator animator;
 
     Coroutine moveRoutine;
     [SerializeField] Transform[] wayPoints;
@@ -16,6 +17,7 @@ public class Enemy : MonoBehaviour
 
     [SerializeField] float visionDistance;
     [SerializeField] float visionAngel;
+    RaycastHit visionHit;
 
     private void OnDrawGizmos()
     {
@@ -33,16 +35,15 @@ public class Enemy : MonoBehaviour
     {
         while (GameManager.player == null)
             yield return null;
-        player = GameManager.player.transform;
+        playerPosition = GameManager.player.GetComponent<PlayerMovement>().visionObject;
 
-        //moveRoutine = StartCoroutine(Movement());
+        moveRoutine = StartCoroutine(Movement());
     }
 
     private void Update()
     {
         if (!GameManager.gameOver && SpotPlayer())
         {
-            print("spotted");
             GameManager.gm.SpottedGameOver();
         }
     }
@@ -51,12 +52,22 @@ public class Enemy : MonoBehaviour
     {
         while (true)
         {
+            animator.SetBool("Walking", true);
+
             float time = 0;
             Vector3 currentPoint = wayPoints[wayPointIndex].position;
             Vector3 nextPoint = wayPoints[wayPointNextIndex].position;
             Vector3 targetAngle = nextPoint - currentPoint;
             Quaternion initialRotation = transform.rotation;
             Quaternion targetRotation = Quaternion.LookRotation(targetAngle, Vector3.up);
+
+            Vector3 perp = Vector3.Cross(transform.forward, targetAngle);
+            float dir = Vector3.Dot(perp, transform.up);
+            if (dir > 0f)
+                animator.SetFloat("Turn", 1f);
+            else
+                animator.SetFloat("Turn", 0f);
+
             while (time < 1)
             {
                 time += (Time.deltaTime * turnSpeed);
@@ -84,23 +95,28 @@ public class Enemy : MonoBehaviour
             else
                 wayPointNextIndex = 0;
 
+            animator.SetBool("Walking", false);
             yield return new WaitForSeconds(waitTimeAtPoint);
         }
     }
 
     bool SpotPlayer()
     {
-        if(player != null && Vector3.Distance(transform.position, player.position) < visionDistance)
+        if(playerPosition != null && Vector3.Distance(transform.position, playerPosition.position) < visionDistance)
         {
-            Vector3 dirPlayer = (player.position - transform.position).normalized;
+            Vector3 dirPlayer = (playerPosition.position - transform.position).normalized;
             float anglePlayer = Vector3.Angle(transform.forward, dirPlayer);
             if(anglePlayer < visionAngel)
             {
-                if (!Physics.Linecast(transform.position + Vector3.up * .5f, player.position, 0))
+                Physics.Linecast(transform.position + Vector3.up * .5f, playerPosition.position, out visionHit);
+                if (!visionHit.transform.CompareTag("Environment"))
                 {
-                    player.GetComponent<PlayerMovement>().LookAtEnemy(transform);
+                    Debug.DrawLine(transform.position + Vector3.up * .5f, playerPosition.position, Color.red, 1f);
+                    GameManager.player.GetComponent<PlayerMovement>().LookAtEnemy(transform);
                     if (moveRoutine != null)
                         StopCoroutine(moveRoutine);
+                    animator.SetBool("Walking", false);
+                    transform.LookAt(playerPosition, Vector3.up);
                     return true;
                 }
             }

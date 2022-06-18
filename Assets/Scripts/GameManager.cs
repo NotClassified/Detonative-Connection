@@ -60,9 +60,9 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
         {
             //player.transform.position = new Vector3(0, 1);
+            SceneManager.LoadScene(1);
             gameOver = false;
             //spottedUIParent.SetActive(false);
-            SceneManager.LoadScene(1);
         }
 
         if (Input.GetKeyDown(KeyCode.T))

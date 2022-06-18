@@ -2142,7 +2142,7 @@ GameObject:
   - component: {fileID: 7561510579951872004}
   - component: {fileID: 7561510579951872005}
   m_Layer: 0
-  m_Name: xbot
+  m_Name: xbot Player
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2163,6 +2163,7 @@ Transform:
   - {fileID: 365915353387661965}
   - {fileID: 7931101788290310735}
   - {fileID: 3433627516641296996}
+  - {fileID: 655309792414079838}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2233,6 +2234,10 @@ MonoBehaviour:
   controller: {fileID: 7561510579951872006}
   camMain: {fileID: 0}
   animator: {fileID: 2763710135975725463}
+  visionObject: {fileID: 655309792414079838}
+  visionObjectDefaultPosition: {x: 0, y: 1.6, z: 0}
+  visionObjectCrouchPosition: {x: 0, y: 0.9, z: 0}
+  crouchLayerLerpTime: 0.1
   cam: {fileID: 0}
   camXSensitivity: {fileID: 0}
   camYSensitivity: {fileID: 0}
@@ -2241,6 +2246,7 @@ MonoBehaviour:
   velocity: 0
   acceleration: 30
   deacceleration: 40
+  crouchingVelocity: 0
   walkingVelocity: 1.5
   runningVelocity: 5
   rotationDuration: 0.08
@@ -2501,6 +2507,37 @@ Transform:
   - {fileID: 8004469429851481394}
   m_Father: {fileID: 4358489489960114711}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8772596978679788551
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 655309792414079838}
+  m_Layer: 0
+  m_Name: VisionObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &655309792414079838
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8772596978679788551}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7203191788585558768}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9053649809834051444
 GameObject:
