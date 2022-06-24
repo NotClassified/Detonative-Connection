@@ -17,6 +17,7 @@ public class PlayerInventory : MonoBehaviour
     {
         int numBatteries = batteries;
         batteries = 0;
+        batteryText.text = batteries.ToString();
         return numBatteries;
     }
 }

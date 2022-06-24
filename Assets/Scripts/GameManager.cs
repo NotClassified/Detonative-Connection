@@ -6,9 +6,6 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] Transform batteryParent;
-    [SerializeField] GameObject batteryPrefab;
-    [SerializeField] int numBatteries;
     public static GameObject player;
     public static bool gameOver;
     public static GameManager gm;
@@ -28,8 +25,6 @@ public class GameManager : MonoBehaviour
     {
         gm = this;
         player = GameObject.FindGameObjectWithTag("Player");
-        for (int i = 0; i < numBatteries; i++)
-            Instantiate(batteryPrefab, batteryParent);
         tutorialRoutine = StartCoroutine(ShowTutorial());
     }
 
@@ -53,18 +48,21 @@ public class GameManager : MonoBehaviour
         PauseUIParent.SetActive(false);
         Time.timeScale = 1;
     }
-    public void Quit() => SceneManager.LoadScene(0);
+    public void Restart()
+    {
+        gameOver = false;
+        Time.timeScale = 1;
+        SceneManager.LoadScene(1);
+    }
+    public void Quit()
+    {
+        gameOver = false;
+        Time.timeScale = 1;
+        SceneManager.LoadScene(0);
+    }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            //player.transform.position = new Vector3(0, 1);
-            SceneManager.LoadScene(1);
-            gameOver = false;
-            //spottedUIParent.SetActive(false);
-        }
-
         if (Input.GetKeyDown(KeyCode.T))
             StartShowTutorial();
 
@@ -88,6 +86,7 @@ public class GameManager : MonoBehaviour
         gameOver = true;
         timerUIParent.SetActive(false);
         spottedUIParent.SetActive(true);
+        Invoke("Restart", 2.5f);
     }
 
     public void BatteryFull()
@@ -121,6 +120,7 @@ public class GameManager : MonoBehaviour
         timerUIParent.SetActive(false);
         explodedUIParent.SetActive(true);
         gameOver = true;
+        Invoke("Restart", 3f);
     }
     
     public void Victory()

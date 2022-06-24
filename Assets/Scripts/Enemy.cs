@@ -15,20 +15,24 @@ public class Enemy : MonoBehaviour
     [SerializeField] float moveSpeed;
     [SerializeField] float turnSpeed;
 
+    [SerializeField] Transform visionObject;
     [SerializeField] float visionDistance;
     [SerializeField] float visionAngel;
     RaycastHit visionHit;
 
     private void OnDrawGizmos()
     {
-        Transform lastWayPoint = wayPoints[0];
-        foreach (Transform wayPoint in wayPoints)
+        if(wayPoints.Length > 0)
         {
-            Gizmos.DrawSphere(wayPoint.position, .2f);
-            Gizmos.DrawLine(lastWayPoint.position, wayPoint.position);
-            lastWayPoint = wayPoint;
+            Transform lastWayPoint = wayPoints[0];
+            foreach (Transform wayPoint in wayPoints)
+            {
+                Gizmos.DrawSphere(wayPoint.position, .2f);
+                Gizmos.DrawLine(lastWayPoint.position, wayPoint.position);
+                lastWayPoint = wayPoint;
+            }
+            Gizmos.DrawLine(lastWayPoint.position, wayPoints[0].position);
         }
-        Gizmos.DrawLine(lastWayPoint.position, wayPoints[0].position);
     }
 
     private IEnumerator Start()
@@ -37,7 +41,8 @@ public class Enemy : MonoBehaviour
             yield return null;
         playerPosition = GameManager.player.GetComponent<PlayerMovement>().visionObject;
 
-        moveRoutine = StartCoroutine(Movement());
+        if(wayPoints.Length > 0)
+            moveRoutine = StartCoroutine(Movement());
     }
 
     private void Update()
@@ -102,21 +107,21 @@ public class Enemy : MonoBehaviour
 
     bool SpotPlayer()
     {
-        if(playerPosition != null && Vector3.Distance(transform.position, playerPosition.position) < visionDistance)
+        if(playerPosition != null && Vector3.Distance(visionObject.position, playerPosition.position) < visionDistance)
         {
-            Vector3 dirPlayer = (playerPosition.position - transform.position).normalized;
+            Vector3 dirPlayer = (playerPosition.position - visionObject.position).normalized;
             float anglePlayer = Vector3.Angle(transform.forward, dirPlayer);
             if(anglePlayer < visionAngel)
             {
-                Physics.Linecast(transform.position + Vector3.up * .5f, playerPosition.position, out visionHit);
+                Physics.Linecast(visionObject.position, playerPosition.position, out visionHit);
                 if (!visionHit.transform.CompareTag("Environment"))
                 {
-                    Debug.DrawLine(transform.position + Vector3.up * .5f, playerPosition.position, Color.red, 1f);
+                    Debug.DrawLine(visionObject.position + Vector3.up, playerPosition.position, Color.red, 1f);
                     GameManager.player.GetComponent<PlayerMovement>().LookAtEnemy(transform);
                     if (moveRoutine != null)
                         StopCoroutine(moveRoutine);
                     animator.SetBool("Walking", false);
-                    transform.LookAt(playerPosition, Vector3.up);
+                    transform.LookAt(playerPosition, transform.up);
                     return true;
                 }
             }
