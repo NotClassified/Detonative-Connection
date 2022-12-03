@@ -14,7 +14,7 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene(1);
     }
     public void ShowTutorial()
-    {
+    {   
         tutorialUIParent.SetActive(true);
         BackUI.SetActive(true);
     }

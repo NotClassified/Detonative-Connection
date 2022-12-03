@@ -14,6 +14,7 @@ public class Battery : MonoBehaviour
             if(coll.gameObject.CompareTag("Player"))
             {
                 coll.gameObject.GetComponent<PlayerInventory>().CollectBattery();
+                GameManager.gm.BatteryPickUp(int.Parse(name.Substring(7)) - 1);
                 Destroy(gameObject);
                 return;
             }

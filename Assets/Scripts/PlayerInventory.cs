@@ -5,19 +5,23 @@ using TMPro;
 
 public class PlayerInventory : MonoBehaviour
 {
-    public int batteries;
     [SerializeField] TextMeshProUGUI batteryText;
+
+    private void Awake()
+    {
+        batteryText.text = GameManager.batteries.ToString();
+    }
 
     public void CollectBattery()
     {
-        batteries++;
-        batteryText.text = batteries.ToString();
+        GameManager.batteries++;
+        batteryText.text = GameManager.batteries.ToString();
     }
     public int ConnectBattery()
     {
-        int numBatteries = batteries;
-        batteries = 0;
-        batteryText.text = batteries.ToString();
+        int numBatteries = GameManager.batteries;
+        GameManager.batteries = 0;
+        batteryText.text = GameManager.batteries.ToString();
         return numBatteries;
     }
 }

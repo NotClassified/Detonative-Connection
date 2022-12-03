@@ -47,7 +47,7 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
-        if (!GameManager.gameOver && SpotPlayer())
+        if (!GameManager.gm.gameOver && SpotPlayer())
         {
             GameManager.gm.SpottedGameOver();
         }

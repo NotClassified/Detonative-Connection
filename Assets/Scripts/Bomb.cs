@@ -7,9 +7,8 @@ public class Bomb : MonoBehaviour
 {
     [SerializeField] Transform controlTransfrom;
     [SerializeField] float radiusConnect;
-    [SerializeField] GameObject[] chargers;
+    public GameObject[] chargers;
     [SerializeField] Material chargedColor;
-    int numCharged = 0;
 
     [SerializeField] GameObject taskUI;
     [SerializeField] Slider batteriesConnectedSlider;
@@ -35,7 +34,7 @@ public class Bomb : MonoBehaviour
             if (coll.gameObject.CompareTag("Player"))
             {
                 inRangeOfPlayer = true;
-                if (numCharged < chargers.Length)
+                if (GameManager.numCharged < chargers.Length)
                 {
                     if(!noBatteriesUI.activeSelf)
                         connectUI.SetActive(true);
@@ -48,7 +47,7 @@ public class Bomb : MonoBehaviour
                 }
             }
         }
-        if (!inRangeOfPlayer || GameManager.gameOver)
+        if (!inRangeOfPlayer || GameManager.gm.gameOver)
         {
             connectUI.SetActive(false);
             noBatteriesUI.SetActive(false);
@@ -74,15 +73,13 @@ public class Bomb : MonoBehaviour
         {
             for (int i = 0; i < playerBatteries; i++)
             {
-                chargers[numCharged].GetComponent<Renderer>().material = chargedColor;
-                numCharged++;
-                batteriesConnectedSlider.value = numCharged;
+                chargers[GameManager.numCharged].GetComponent<Renderer>().material = chargedColor;
+                GameManager.numCharged++;
+                batteriesConnectedSlider.value = GameManager.numCharged;
             }
-            if (numCharged == chargers.Length)
+            if (GameManager.numCharged == chargers.Length)
             {
-                GameManager.gm.BatteryFull();
-                taskUI.SetActive(false);
-                evacuateUI.SetActive(true);
+                AllBatteriesConnected();
             }
         }
         else
@@ -90,5 +87,20 @@ public class Bomb : MonoBehaviour
             connectUI.SetActive(false);
             noBatteriesUI.SetActive(true);
         }
+    }
+    public void ConnectBatteries(int charged)
+    {
+        for (int i = 0; i < charged; i++)
+        {
+            chargers[i].GetComponent<Renderer>().material = chargedColor;
+            batteriesConnectedSlider.value = GameManager.numCharged;
+        }
+    }
+
+    public void AllBatteriesConnected()
+    {
+        GameManager.gm.BatteryFull();
+        taskUI.SetActive(false);
+        evacuateUI.SetActive(true);
     }
 }

@@ -33,7 +33,7 @@ public class PlayerMovement : Player
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.gameOver)
+        if (GameManager.gm.gameOver)
         {
             animator.SetBool("IsRunning", false);
             animator.SetBool("IsWalking", false);

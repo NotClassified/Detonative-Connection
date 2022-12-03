@@ -7,8 +7,9 @@ using TMPro;
 public class GameManager : MonoBehaviour
 {
     public static GameObject player;
-    public static bool gameOver;
+    public bool gameOver = false;
     public static GameManager gm;
+    public Bomb bombScript;
 
     [SerializeField] GameObject PauseUIParent;
     [SerializeField] GameObject tutorialUIParent;
@@ -21,11 +22,50 @@ public class GameManager : MonoBehaviour
     [SerializeField] int timeBomb;
     Coroutine countDownRoutine;
 
+    public static int batteries;
+    public static int numCharged = 0;
+    public Transform batteryParent;
+    public GameObject[] batteriesOnMap;
+    public static bool[] batteriesOnMapDestroy;
+    public Vector3 bombSpawn;
+
     void Start()
     {
         gm = this;
         player = GameObject.FindGameObjectWithTag("Player");
         tutorialRoutine = StartCoroutine(ShowTutorial());
+        Cursor.visible = false;
+
+        bombScript.ConnectBatteries(numCharged);
+
+        if(batteriesOnMapDestroy == null)
+        {
+            batteriesOnMapDestroy = new bool[batteryParent.childCount];
+        }
+
+        //get batteries if there are no references and all bateries havn't been used yet
+        if (batteriesOnMap.Length == 0)
+        {
+            batteriesOnMap = new GameObject[batteriesOnMapDestroy.Length];
+            foreach (Transform child in batteryParent)
+            {
+                batteriesOnMap[int.Parse(child.name.Substring(7)) - 1] = child.gameObject;
+            }
+        }
+        //check each battery to see if it was picked up, if it was, then destroy that battery
+        for (int i = 0; i < batteriesOnMapDestroy.Length; i++)
+        {
+            if (batteriesOnMapDestroy[i])
+                Destroy(batteriesOnMap[i]);
+        }
+
+        //if the player gets spotted after connecting all batteries, spawn player next to bomb
+        if (numCharged == bombScript.chargers.Length)
+        {
+            bombScript.AllBatteriesConnected();
+            player.transform.position = bombSpawn;
+            tutorialUIParent.SetActive(false);
+        }
     }
 
     public void StartShowTutorial()
@@ -72,11 +112,13 @@ public class GameManager : MonoBehaviour
             {
                 PauseUIParent.SetActive(false);
                 Time.timeScale = 1;
+                Cursor.visible = false;
             }
             else
             {
                 PauseUIParent.SetActive(true);
                 Time.timeScale = 0;
+                Cursor.visible = true;
             }
         }
     }
@@ -87,6 +129,12 @@ public class GameManager : MonoBehaviour
         timerUIParent.SetActive(false);
         spottedUIParent.SetActive(true);
         Invoke("Restart", 2.5f);
+    }
+
+    public void BatteryPickUp(int index)
+    {
+        //keep track of which batteries were picked up
+        batteriesOnMapDestroy[index] = true;
     }
 
     public void BatteryFull()
@@ -129,6 +177,9 @@ public class GameManager : MonoBehaviour
         timerUIParent.SetActive(false);
         StopCoroutine(countDownRoutine);
         gameOver = true;
+        numCharged = 0;
+        batteries = 0;
+        batteriesOnMapDestroy = new bool[batteriesOnMap.Length];
         Invoke("Quit", 2f);
     }
 }
