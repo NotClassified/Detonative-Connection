@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         tutorialRoutine = StartCoroutine(ShowTutorial());
         Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
 
         bombScript.ConnectBatteries(numCharged);
 
@@ -90,6 +91,17 @@ public class GameManager : MonoBehaviour
     }
     public void Restart()
     {
+        //reset game progress
+        numCharged = 0;
+        batteries = 0;
+        gameOver = false;
+        Time.timeScale = 1;
+        batteriesOnMapDestroy = new bool[batteriesOnMap.Length];
+        SceneManager.LoadScene(1);
+    }
+    public void RestartNoReset()
+    {
+        //restart level, do not reset game progress
         gameOver = false;
         Time.timeScale = 1;
         SceneManager.LoadScene(1);
@@ -113,12 +125,14 @@ public class GameManager : MonoBehaviour
                 PauseUIParent.SetActive(false);
                 Time.timeScale = 1;
                 Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
             }
             else
             {
                 PauseUIParent.SetActive(true);
                 Time.timeScale = 0;
                 Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
             }
         }
     }
@@ -128,7 +142,7 @@ public class GameManager : MonoBehaviour
         gameOver = true;
         timerUIParent.SetActive(false);
         spottedUIParent.SetActive(true);
-        Invoke("Restart", 2.5f);
+        Invoke("RestartNoReset", 2.5f);
     }
 
     public void BatteryPickUp(int index)
